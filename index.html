@@ -54,14 +54,32 @@
             <li><a href="">Sport</a></li>
             <li><a href="">Western</a></li>
           </ul>
-          <a href="#">Popular now</a>
-          <a href="#">Coming Soon</a>
         </li>
+        <li><a href="#">Popular now</a></li>
+        <li><a href="#">Coming Soon</a></li>
+        <li class="search">
+          <input class="search-bar" type="text" placeholder="Search..." />
+        </li>
+        <li class="login-link"><a href="#">Log in/register</a></li>
       </ul>
-      <div class="search">
-        <input class="search-bar" type="text" placeholder="Search..." />
-      </div>
     </nav>
+    <!-- login window -->
+    <div class="login-modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Log In</h3>
+        <form action="">
+          <label for="username">Username:</label> <br />
+          <input type="text" name="username" id="username" /> <br /><br />
+
+          <label for="password">Password:</label><br />
+          <input type="password" name="password" id="password" /> <br /><br />
+
+          <button type="submit">Log in</button>
+        </form>
+        <p>Don't have an account? <a href="#">Register here</a></p>
+      </div>
+    </div>
     <!-- Nav bar -->
     <!-- Main -->
     <!-- Footer -->
