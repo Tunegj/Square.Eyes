@@ -1,0 +1,5 @@
+.banner {
+  background-color: var(--color-background-light);
+  height: 60px;
+  width: 100%;
+}

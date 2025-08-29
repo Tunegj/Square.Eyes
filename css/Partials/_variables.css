@@ -1,0 +1,32 @@
+:root {
+  /* Background colors */
+
+  --color-background-light: #fbefef;
+  --color-background-dark: #5e5757;
+  --color-button-green: #087f8c;
+  --color-button-hover-orange: #ee8813;
+  --color-button-hover-green: #10f651;
+  --color-button-hover-red: #ee1313;
+
+  /* Text colors */
+
+  --color-text-light: #ffffff;
+  --color-text-dark: #000000;
+
+  /* Font families */
+  --font-family-header: "Oswald", sans-serif;
+  --font-family-body: "Poppins", sans-serif;
+
+  /* Font sizes */
+  --font-size-small: 0.875rem; /* 14px */
+  --font-size-medium: 1rem; /* 16px */
+  --font-size-large: 1.25rem; /* 20px */
+  --font-size-xlarge: 2rem; /* 32px */
+  --font-size-xxlarge: 3rem; /* 48px */
+
+  /* Radius */
+  --border-radius-small: 10px;
+  --border-radius-medium: 15px;
+  --border-radius-large: 20px;
+  --border-radius-xlarge: 30px;
+}
