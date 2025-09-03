@@ -52,14 +52,13 @@ nav {
 
 .nav-bar ul {
   list-style: none;
-  margin: 0;
   padding: 0;
   display: flex;
   align-items: center;
 }
 
 .nav-bar li {
-  margin: 0 15px;
+  margin: 15px;
 }
 
 .dropdown {
@@ -85,4 +84,12 @@ nav {
   width: 350px;
   border-radius: var(--border-radius-medium);
   text-align: center;
+}
+
+.login-modal {
+  display: none;
+}
+
+.material-symbols-outlined {
+  color: var(--color-text-light);
 }
