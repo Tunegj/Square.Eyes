@@ -19,11 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function renderProducts(items) {
-    if (!listEl) {
-      console.warn('No element with id "products" found. Skipping rendering.');
-      return;
-    }
-
+    if (!listEl) return;
     if (!items.length) {
       listEl.innerHTML = "<li>No products found.</li>";
       return;
@@ -37,6 +33,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       li.style.border = "1px solid #e5e7eb";
       li.style.borderRadius = "8px";
       li.style.padding = "8px";
+
+      const a = document.createElement("a");
+      a.href = `/product.html?id=${encodeURIComponent(p.id)}`;
+      a.style.display = "block";
+      a.style.textDecoration = "none";
+      a.style.color = "inherit";
 
       const img = document.createElement("img");
       img.src = p.image?.url || "";
@@ -72,7 +74,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         priceP.style.fontWeight = "600";
       }
 
-      li.append(img, h3, priceP);
+      a.append(img, h3, priceP);
+      li.appendChild(a);
       frag.appendChild(li);
     }
 
