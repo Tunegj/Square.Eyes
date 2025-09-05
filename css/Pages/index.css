@@ -1,5 +1,8 @@
-.banner {
-  background-color: var(--color-background-light);
-  height: 60px;
-  width: 100%;
+#products {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 0;
+  margin: 0;
 }
