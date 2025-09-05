@@ -6,7 +6,7 @@ function nok(n) {
 }
 
 async function getProduct(id) {
-  const res = await fetch(`${BASE}/${encodeURI}`);
+  const res = await fetch(`${BASE}/${encodeURIComponent(id)}`);
   if (!res.ok) {
     throw new Error(`HTTP ${res.status}`);
   }
@@ -64,6 +64,32 @@ document.addEventListener("DOMContentLoaded", async () => {
       price.textContent = nok(p.price);
       price.style.fontWeight = "600";
     }
+
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.textContent = "Add to cart";
+    addBtn.style.marginTop = "12px";
+    addBtn.style.padding = "8px 12px";
+    addBtn.style.border = "1px solid #111827";
+    addBtn.style.borderRadius = "8px";
+    addBtn.style.cursor = "pointer";
+
+    addBtn.addEventListener("click", () => {
+      Cart.addItem({
+        id: p.id,
+        title: p.title,
+        price: p.price,
+        discountedPrice: p.discountedPrice,
+        onSale: p.onSale,
+        image: p.image?.url || "",
+      });
+
+      Cart.updateCartHeader();
+      statusEl.textContent = "Added to basket.";
+    });
+
+    root.append(addBtn);
+    Cart.updateCartHeader();
 
     root.append(img, h2, desc, meta, price);
   } catch (e) {

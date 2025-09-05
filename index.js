@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       li.style.padding = "8px";
 
       const a = document.createElement("a");
-      a.href = `/product.html?id=${encodeURIComponent(p.id)}`;
+      a.href = `product/index.html?id=${encodeURIComponent(p.id)}`;
       a.style.display = "block";
       a.style.textDecoration = "none";
       a.style.color = "inherit";
