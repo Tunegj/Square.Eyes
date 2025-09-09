@@ -47,8 +47,30 @@ function clearCart() {
 }
 
 function updateCartHeader() {
-  const el = document.getElementById("cart-count");
-  if (el) el.textContent = String(countCart());
+  const count = countCart();
+  const badge = document.getElementById("cart-count");
+  if (badge) {
+    badge.textContent = String(count);
+    const link = badge.closest("a");
+    if (link) {
+      link.setAttribute(
+        "aria-label",
+        count === 1 ? "View cart, 1 item" : `View cart, ${count} items`
+      );
+    }
+  }
+}
+
+function unitPrice(i) {
+  const n = Number(i.onSale ? i.discountedPrice : i.unitPrice);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function cartTotal() {
+  return readCart().reduce((sum, i) => {
+    const qty = Number(i.qty ?? i.quantity ?? 1) || 1;
+    return sum + unitPrice(i) * qty;
+  }, 0);
 }
 
 window.Cart = {
@@ -59,4 +81,6 @@ window.Cart = {
   clearCart,
   countCart,
   updateCartHeader,
+  unitPrice,
+  cartTotal,
 };
