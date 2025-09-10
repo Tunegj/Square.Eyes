@@ -25,7 +25,7 @@
   </head>
   <body>
     <header class="site-header">
-      <a href="index.html" class="logo">
+      <a href="/index.html" class="logo">
         Square Eyes <span class="tagline">Own the Magic</span>
       </a>
     </header>
@@ -105,11 +105,12 @@
       </div>
     </div>
     <main>
-      <div id="status">Loading…</div>
+      <div id="status" role="status" aria-live="polite">Loading…</div>
       <section id="product-root"></section>
       <script src="/product/product.js" defer></script>
       <script src="/cart.js"></script>
     </main>
+
     <!-- Main -->
     <!-- Footer -->
   </body>
