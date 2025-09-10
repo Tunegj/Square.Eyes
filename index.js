@@ -12,6 +12,95 @@ async function fetchProducts() {
 document.addEventListener("DOMContentLoaded", async () => {
   const statusEl = document.getElementById("status");
   const listEl = document.getElementById("products");
+  const genreSel = document.getElementById("genre");
+  const priceSel = document.getElementById("price");
+  const sortSel = document.getElementById("sort");
+  const searchEl = document.querySelector("search");
+
+  let allProducts = [];
+
+  function unitPrice(p) {
+    const n = Number(p.onSale ? p.discountedPrice : p.price);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function readPriceRange() {
+    const v = priceSel?.value || "";
+    if (!v) return { min: null, max: null };
+    const [min, max] = v.split("-").map(Number);
+    return {
+      min: Number.isFinite(min) ? min : null,
+      max: Number.isFinite(max) ? max : null,
+    };
+  }
+
+  function applyFiltersAndSort() {
+    const genre = (genreSel?.value || "").trim();
+    const { min, max } = readPriceRange();
+    const sort = (sortSel?.value || "").trim();
+    const q = (searchEl?.value || "").trim().toLowerCase();
+
+    let items = allProducts.slice();
+
+    if (genre) {
+      items = items.filter(
+        (p) => (p.genre || "").toLowerCase() === genre.toLowerCase()
+      );
+    }
+
+    if (q) {
+      items = items.filter((p) => (p.title || "").toLowerCase().includes(q));
+    }
+
+    if (min != null) items = items.filter((p) => unitPrice(p) >= min);
+    if (max != null) items = items.filter((p) => unitPrice(p) <= max);
+
+    switch (sort) {
+      case "price-asc":
+        items.sort((a, b) => unitPrice(a) - unitPrice(b));
+        break;
+      case "price-desc":
+        items.sort((a, b) => unitPrice(b) - unitPrice(a));
+        break;
+      case "title-asc":
+        items.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+        break;
+      case "title-desc":
+        items.sort((a, b) => (b.title || "").localeCompare(a.title || ""));
+        break;
+      case "rating-asc":
+        items.sort((a, b) => (Number(a.rating) || 0) - (Number(b.rating) || 0));
+        break;
+      case "rating-desc":
+        items.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+        break;
+    }
+
+    renderProducts(items);
+    const parts = [];
+    if (genre && genre !== "all") parts.push(`genre "${genre}"`);
+    if (q) parts.push(`title contains "${q}"`);
+    if (min != null || max != null)
+      parts.push(`price ${min ?? "…"}–${max ?? "…"}`);
+    statusEl.textContent = parts.length
+      ? `Showing ${items.length} of ${allProducts.length} movies (${parts.join(
+          ", "
+        )}).`
+      : `Showing ${items.length} of ${allProducts.length} movies.`;
+  }
+
+  genreSel?.addEventListener("change", applyFiltersAndSort);
+  priceSel?.addEventListener("change", applyFiltersAndSort);
+  sortSel?.addEventListener("change", applyFiltersAndSort);
+  searchEl?.addEventListener("input", applyFiltersAndSort);
+
+  try {
+    allProducts = await fetchProducts();
+    applyFiltersAndSort(); // this will call renderProducts + set status
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "Failed to load products.";
+  }
 
   function nok(n) {
     const x = Number(n);
@@ -82,14 +171,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     listEl.appendChild(frag);
   }
 
-  try {
-    const products = await fetchProducts();
-    console.log("Square Eyes products:", products);
-    console.log("First product:", products[0]);
-    renderProducts(products);
-    statusEl.textContent = `Loaded ${products.length} products.`;
-  } catch (err) {
-    console.error(err);
-    statusEl.textContent = "Failed to load products.";
-  }
+  // try {
+  //   const products = await fetchProducts();
+  //   console.log("Square Eyes products:", products);
+  //   console.log("First product:", products[0]);
+  //   renderProducts(products);
+  //   statusEl.textContent = `Loaded ${products.length} products.`;
+  // } catch (err) {
+  //   console.error(err);
+  //   statusEl.textContent = "Failed to load products.";
+  // }
 });

@@ -44,42 +44,29 @@
 
 /* NAVBAR */
 
-nav {
+.toolbar {
   background-color: var(--color-background-dark);
   height: 60px;
   width: 100%;
-}
-
-.nav-bar ul {
-  list-style: none;
-  padding: 0;
   display: flex;
+  justify-content: space-around;
   align-items: center;
 }
 
-.nav-bar li {
-  margin: 15px;
-}
-
-.dropdown {
-  margin: 20px;
+.toolbar li {
   list-style: none;
 }
 
-.nav-bar a {
+.toolbar label,
+li,
+a {
   color: var(--color-text-light);
 }
 
-.dropdown-genre li {
-  list-style: none;
-  display: none;
-  color: var(--color-text-light);
+#search {
 }
 
-.search {
-}
-
-.search-bar {
+#search {
   height: 32px;
   width: 350px;
   border-radius: var(--border-radius-medium);

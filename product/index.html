@@ -36,50 +36,57 @@
       >
       <!-- HUSK Å ENDRE REF SIDE -->
     </div>
-    <nav class="nav-bar">
-      <ul>
-        <li class="dropdown">
-          <a href="#">Genres</a>
-          <ul class="dropdown-genre">
-            <li><a href="">Action & Adventure</a></li>
-            <li><a href="">Animation</a></li>
-            <li><a href="">Comedy</a></li>
-            <li><a href="">Crime</a></li>
-            <li><a href="">Documentary</a></li>
-            <li><a href="">Drama</a></li>
-            <li><a href="">European Cinema</a></li>
-            <li><a href="">Fantasy</a></li>
-            <li><a href="">Horror</a></li>
-            <li><a href="">Kids & Family</a></li>
-            <li><a href="">Music & Musicals</a></li>
-            <li><a href="">Mystery & Thrillers</a></li>
-            <li><a href="">Romance</a></li>
-            <li><a href="">Science Fiction</a></li>
-            <li><a href="">Sport</a></li>
-            <li><a href="">Western</a></li>
-          </ul>
-        </li>
-        <li><a href="#">Popular now</a></li>
-        <li><a href="#">Coming Soon</a></li>
-        <li class="search">
-          <input class="search-bar" type="text" placeholder="Search..." />
-        </li>
-        <li class="login-link"><a href="#">Log in/register</a></li>
-        <li class="my-account"><a href="#">My account</a></li>
-        <li class="cart">
-          <a
-            href="/checkout/index.html"
-            class="cart-link"
-            aria-label="View cart, 0 items"
-          >
-            <span class="material-symbols-outlined" aria-hidden="true">
-              shopping_cart
-            </span>
-            <span id="cart-count" aria-live="polite">0</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
+    <div class="toolbar">
+      <label for="genre"
+        >Genre
+        <select name="genre" id="genre">
+          <option value="">All genres</option>
+          <option value="Action">Action</option>
+          <option value="Kids">Kids</option>
+          <option value="Horror">Horror</option>
+          <option value="Comedy">Comedy</option>
+          <option value="Drama">Drama</option>
+        </select>
+      </label>
+      <label for="price"
+        >Price
+        <select name="price" id="price">
+          <option value="">All prices</option>
+          <option value="79-109">79.00 - 109.00</option>
+          <option value="109-129">109.00 - 129.00</option>
+          <option value="129-180">129.00 - 180.00</option>
+        </select>
+      </label>
+      <label for="sort"
+        >Sort By
+        <select name="" id="sort">
+          <option value="price-asc">Price: low → high</option>
+          <option value="price-desc">Price: high → low</option>
+          <option value="title-asc">Title: A → Z</option>
+          <option value="title-desc">Title: Z → A</option>
+          <option value="rating-desc">Rating: high → low</option>
+          <option value="rating-asc">Rating: low → high</option>
+        </select>
+      </label>
+      <label for="search"
+        >Search
+        <input id="search" type="search" placeholder="Search titles..." />
+      </label>
+      <li class="login-link"><a href="#">Log in/register</a></li>
+      <li class="my-account"><a href="#">My account</a></li>
+      <li class="cart">
+        <a
+          href="/checkout/index.html"
+          class="cart-link"
+          aria-label="View cart, 0 items"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">
+            shopping_cart
+          </span>
+          <span id="cart-count" aria-live="polite">0</span>
+        </a>
+      </li>
+    </div>
     <!-- login window -->
     <div class="login-modal">
       <div class="modal-content">
@@ -97,7 +104,6 @@
         <p>Don't have an account? <a href="#">Register here</a></p>
       </div>
     </div>
-    <!-- Nav bar -->
     <main>
       <div id="status">Loading…</div>
       <section id="product-root"></section>
