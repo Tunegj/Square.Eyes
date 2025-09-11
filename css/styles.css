@@ -1,6 +1,6 @@
-@import url("css/Partials/variables.css");
+@import url("Partials/variables.css");
 
-@import url("css/Partials/globals.css");
-@import url("css/Partials/reset.css");
-@import url("css/Partials/header.css");
-@import url("css/Pages/index.css");
+@import url("Partials/globals.css");
+@import url("Partials/reset.css");
+@import url("Partials/header.css");
+@import url("Pages/index.css");
