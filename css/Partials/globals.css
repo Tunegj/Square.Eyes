@@ -16,3 +16,7 @@ button,
 textarea {
   font-family: var(--font-family-body);
 }
+
+#cart-count {
+  text-decoration: none;
+}

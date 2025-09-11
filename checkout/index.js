@@ -157,11 +157,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         statusEl.textContent = "Item removed from cart.";
       });
 
+      // assemble line item
       left.append(img, title);
       li.append(left, qtyBox, right, removeBtn);
       frag.appendChild(li);
     }
 
+    // append all lines at once
     root.appendChild(frag);
 
     const totalP = document.createElement("p");
@@ -181,6 +183,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     checkoutBtn.style.cursor = "pointer";
     totalsEl.appendChild(checkoutBtn);
 
+    // on checkout, save order to sessionStorage and redirect to confirmation
     checkoutBtn.addEventListener("click", () => {
       const order = {
         id: (crypto?.randomUUID && crypto.randomUUID()) || String(Date.now()),
