@@ -42,6 +42,22 @@ function removeItem(id) {
   return countCart();
 }
 
+function updateQty(id, delta) {
+  const cart = readCart();
+  const idx = cart.findIndex((i) => i.id === id);
+  if (idx === -1) return countCart();
+
+  const current = Number(cart[idx].qty ?? cart[idx].quantity ?? 1);
+  const base = Number.isFinite(current) ? current : 1;
+  const next = Math.max(1, base + Number(delta || 0));
+
+  cart[idx].qty = next;
+  delete cart[idx].quantity; // normalize to `qty`
+
+  writeCart(cart);
+  return countCart();
+}
+
 function clearCart() {
   writeCart([]);
 }
@@ -83,4 +99,5 @@ window.Cart = {
   updateCartHeader,
   unitPrice,
   cartTotal,
+  updateQty,
 };

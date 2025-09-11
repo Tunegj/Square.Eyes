@@ -22,9 +22,46 @@ document.addEventListener("DOMContentLoaded", async () => {
   const priceSel = document.getElementById("price");
   const sortSel = document.getElementById("sort");
   const searchEl = document.getElementById("search");
+  const clearBtn =
+    document.getElementById("clear-filters") ||
+    document.getElementById("clear-filter");
 
-  // All products will be stored here, stringified
+  statusEl?.setAttribute("role", "status");
+  statusEl?.setAttribute("aria-live", "polite");
+  const debouncedApply = debounce(applyFiltersAndSort, 200);
+
+  // All products will be stored here
   let allProducts = [];
+
+  function uniqueGenres(items) {
+    const set = new Set();
+    for (const p of items) {
+      if (typeof p.genre === "string" && p.genre.trim()) {
+        set.add(p.genre.trim());
+      }
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }
+
+  function populateGenres(items) {
+    if (!genreSel) return;
+    while (genreSel.options.length > 1) genreSel.remove(1);
+    for (const g of uniqueGenres(items)) {
+      // <-- fixed name
+      const opt = document.createElement("option");
+      opt.value = g;
+      opt.textContent = g;
+      genreSel.appendChild(opt);
+    }
+  }
+
+  function debounce(fn, ms = 200) {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), ms);
+    };
+  }
 
   // Helper to get the unit price of a product
   function unitPrice(p) {
@@ -95,6 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Render products and update status
     renderProducts(items);
+
     const parts = [];
     // Describe active filters in status
     if (genre && genre !== "all") parts.push(`genre "${genre}"`);
@@ -110,11 +148,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Clear all filters and sorting
 
-  document.getElementById("clear-filter")?.addEventListener("click", () => {
+  clearBtn?.addEventListener("click", () => {
     genreSel.value = "";
     priceSel.value = "";
     sortSel.value = "";
-    const searchEl = document.getElementById("search");
     if (searchEl) searchEl.value = "";
     applyFiltersAndSort();
   });
@@ -123,11 +160,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   genreSel?.addEventListener("change", applyFiltersAndSort);
   priceSel?.addEventListener("change", applyFiltersAndSort);
   sortSel?.addEventListener("change", applyFiltersAndSort);
-  searchEl?.addEventListener("input", applyFiltersAndSort);
+  searchEl?.addEventListener("input", debouncedApply);
 
   // Fetch products and initialize
   try {
     allProducts = await fetchProducts();
+    populateGenres(allProducts);
     applyFiltersAndSort(); // this will call renderProducts + set status
   } catch (err) {
     console.error(err);
