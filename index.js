@@ -219,6 +219,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const priceP = document.createElement("p");
       priceP.style.margin = "0";
+      priceP.style.color = "#111827";
 
       if (p.onSale) {
         const now = document.createElement("span");
