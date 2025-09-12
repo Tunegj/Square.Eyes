@@ -208,14 +208,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       img.alt = p.image?.alt || p.title || "Product image";
       img.loading = "lazy";
       img.style.width = "100%";
-      img.style.aspectRatio = "3 / 4";
+      img.style.aspectRatio = "4 / 4";
       img.style.objectFit = "cover";
       img.style.borderRadius = "6px";
 
       const h3 = document.createElement("h3");
       h3.textContent = p.title || "Untitled";
-      h3.style.margin = "8px 0 4px 0";
-      h3.style.fontSize = "1rem";
+      h3.style.color = "#111827";
 
       const priceP = document.createElement("p");
       priceP.style.margin = "0";

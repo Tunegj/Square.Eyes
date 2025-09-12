@@ -25,63 +25,53 @@
   </head>
   <body>
     <header class="site-header">
-      <a href="/index.html" class="logo">
-        Square Eyes <span class="tagline">Own the Magic</span>
-      </a>
-    </header>
-    <!-- Sales banner -->
-    <div class="banner">
-      <a href="construction.html" class="sales-link"
-        >BIG FALL SALE - Up to 70% off!</a
-      >
-      <!-- HUSK Å ENDRE REF SIDE -->
-    </div>
-    <div class="toolbar">
-      <label for="genre"
-        >Genre
-        <select name="genre" id="genre">
-          <option value="">All genres</option>
-        </select>
-      </label>
-      <label for="price"
-        >Price
-        <select name="price" id="price">
-          <option value="">All prices</option>
-          <option value="79-109">79.00 - 109.00</option>
-          <option value="109-129">109.00 - 129.00</option>
-          <option value="129-180">129.00 - 180.00</option>
-        </select>
-      </label>
-      <label for="sort"
-        >Sort By
-        <select name="" id="sort">
-          <option value="price-asc">Price: low → high</option>
-          <option value="price-desc">Price: high → low</option>
-          <option value="title-asc">Title: A → Z</option>
-          <option value="title-desc">Title: Z → A</option>
-          <option value="rating-desc">Rating: high → low</option>
-          <option value="rating-asc">Rating: low → high</option>
-        </select>
-      </label>
-      <label for="search"
-        >Search
-        <input id="search" type="search" placeholder="Search titles..." />
-      </label>
-      <li class="login-link"><a href="#">Log in/register</a></li>
-      <li class="my-account"><a href="#">My account</a></li>
-      <li class="cart">
-        <a
-          href="../checkout/index.html"
-          class="cart-link"
-          aria-label="View cart, 0 items"
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">
-            shopping_cart
-          </span>
-          <span id="cart-count" aria-live="polite">0</span>
+      <div class="container inner-nav">
+        <a href="../index.html" class="logo"
+          >SQUARE EYES
+          <span class="tagline">Own the Magic</span>
         </a>
-      </li>
-    </div>
+
+        <div class="banner">
+          <a href="#" class="fall-link">BIG FALL SALE - UP TILL 70% OFF!</a>
+        </div>
+
+        <button
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="primary-nav"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+          <span class="sr-only">Toggle menu</span>
+        </button>
+
+        <nav id="primary-nav" class="nav-bar" aria-label="Primary">
+          <ul class="nav-left">
+            <li><a href="../construction.html">Coming soon</a></li>
+            <li><a href="../construction.html">Popular Now</a></li>
+            <li><a href="../construction.html">New Releases</a></li>
+          </ul>
+          <div class="nav-middle">
+            <form class="nav-search" role="search">
+              <input id="search" type="search" placeholder="Search titles..." />
+            </form>
+          </div>
+          <div class="nav-right">
+            <a class="nav-link" href="#">Log in/Register</a>
+            <a class="nav-link" href="#">My Account</a>
+            <a
+              href="../checkout/index.html"
+              class="cart-link"
+              aria-label="View cart, 0 items"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true"
+                >shopping_cart</span
+              >
+              <span id="cart-count" aria-live="polite">0</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </header>
     <!-- login window -->
     <div class="login-modal">
       <div class="modal-content">
