@@ -216,6 +216,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       h3.textContent = p.title || "Untitled";
       h3.style.color = "#111827";
 
+      const ratingP = document.createElement("span");
+      ratingP.textContent = `IMDB rating: ${p.rating}` || "no rating";
+      ratingP.style.color = "#11827";
+
       const priceP = document.createElement("p");
       priceP.style.margin = "0";
       priceP.style.color = "#111827";
@@ -238,7 +242,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         priceP.style.fontWeight = "600";
       }
 
-      a.append(img, h3, priceP);
+      a.append(img, h3, priceP, ratingP);
       li.appendChild(a);
       frag.appendChild(li);
     }
