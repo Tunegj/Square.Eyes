@@ -15,6 +15,146 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Get unit price of item
   const unitPrice = (i) => Number(i.onSale ? i.discountedPrice : i.price) || 0;
 
+  let allProductsCache = null;
+
+  async function getAllProducts() {
+    if (allProductsCache) return allProductsCache;
+    const res = await fetch("https://v2.api.noroff.dev/square-eyes");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const { data } = await res.json();
+    allProductsCache = Array.isArray(data) ? data : [];
+    return allProductsCache;
+  }
+
+  function makeRecoCard(p, onAdd) {
+    const li = document.createElement("li");
+    li.className = "similar-card";
+
+    const a = document.createElement("a");
+    a.href = `../product/index.html?id=${encodeURIComponent(p.id)}`;
+    a.className = "similar-link";
+
+    const img = document.createElement("img");
+    img.src = p.image?.url || "";
+    img.alt = p.image?.alt || p.title || "Movie image";
+    img.loading = "lazy";
+
+    const cap = document.createElement("div");
+    cap.className = "similar-caption";
+
+    const title = document.createElement("div");
+    title.className = "similar-title";
+    title.textContent = p.title || "Untitled";
+
+    const row = document.createElement("div");
+    row.style.display = "flex";
+    row.style.justifyContent = "space-between";
+    row.style.alignItems = "center";
+    row.style.gap = "8px";
+
+    const price = document.createElement("div");
+    if (p.onSale) {
+      const now = document.createElement("span");
+      now.textContent = nok(p.discountedPrice);
+      now.style.color = "#b91c1c";
+      now.style.fontWeight = "600";
+      const was = document.createElement("s");
+      was.textContent = nok(p.price);
+      was.style.color = "#6b7280";
+      was.style.marginLeft = "6px";
+      price.append(now, " ", was);
+    } else {
+      price.textContent = nok(p.price);
+      price.style.fontWeight = "600";
+    }
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "Add";
+    btn.style.border = "1px solid #111827";
+    btn.style.background = "white";
+    btn.style.padding = "4px 8px";
+    btn.style.borderRadius = "8px";
+    btn.style.cursor = "pointer";
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      onAdd?.(p);
+    });
+
+    row.append(price, btn);
+    cap.append(title, row);
+    a.append(img, cap);
+    li.appendChild(a);
+    return li;
+  }
+
+  async function renderRecommendations() {
+    const mount = document.getElementById("cart-recos");
+    if (!mount) return;
+
+    const cartItems = Cart.readCart();
+    mount.innerHTML = "";
+    if (!cartItems.length) return;
+
+    try {
+      const all = await getAllProducts();
+
+      // items currently in cart
+      const inCartIds = new Set(cartItems.map((i) => i.id));
+
+      // genres of items in the cart (from full list so genre is present)
+      const cartGenres = new Set(
+        all
+          .filter((p) => inCartIds.has(p.id))
+          .map((p) => (p.genre || "").toLowerCase())
+          .filter(Boolean)
+      );
+      if (!cartGenres.size) return;
+
+      // same-genre, not in cart; top 12 by rating
+      const recos = all
+        .filter(
+          (p) =>
+            !inCartIds.has(p.id) &&
+            cartGenres.has((p.genre || "").toLowerCase())
+        )
+        .sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
+        .slice(0, 12);
+
+      if (!recos.length) return;
+
+      const h3 = document.createElement("h3");
+      h3.className = "similar-heading";
+      h3.textContent = "You might also like";
+
+      const ul = document.createElement("ul");
+      ul.className = "similar-list";
+
+      const onAdd = (p) => {
+        Cart.addItem({
+          id: p.id,
+          title: p.title,
+          price: p.price,
+          discountedPrice: p.discountedPrice,
+          onSale: p.onSale,
+          image: p.image?.url || "",
+        });
+        Cart.updateCartHeader();
+        renderCart(); // re-render to refresh totals and recos
+        const statusEl = document.getElementById("status");
+        if (statusEl) statusEl.textContent = `${p.title} added to cart.`;
+      };
+
+      for (const p of recos) {
+        ul.appendChild(makeRecoCard(p, onAdd));
+      }
+
+      mount.append(h3, ul);
+    } catch (err) {
+      console.error("Failed to render recommendations:", err);
+    }
+  }
+
   // Render cart contents
   function renderCart() {
     const items = Cart.readCart();
@@ -99,7 +239,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         minus.style.cursor = "not-allowed";
       }
 
-      // quantity text
+      //  quantity text
       const qtyText = document.createElement("span");
       qtyText.textContent = String(qty);
 
@@ -163,146 +303,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       frag.appendChild(li);
     }
 
-    // --- fetch all movies once, for recommendations
-    async function getAllProducts() {
-      const res = await fetch("https://v2.api.noroff.dev/square-eyes");
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const { data } = await res.json();
-      return Array.isArray(data) ? data : [];
-    }
-
-    // build one small recommendation card
-    function makeRecoCard(p, onAdd) {
-      const li = document.createElement("li");
-      li.className = "similar-card";
-
-      const a = document.createElement("a");
-      a.href = `../product/index.html?id=${encodeURIComponent(p.id)}`;
-      a.className = "similar-link";
-
-      const img = document.createElement("img");
-      img.src = p.image?.url || "";
-      img.alt = p.image?.alt || p.title || "Movie image";
-      img.loading = "lazy";
-
-      const cap = document.createElement("div");
-      cap.className = "similar-caption";
-
-      const title = document.createElement("div");
-      title.className = "similar-title";
-      title.textContent = p.title || "Untitled";
-
-      const row = document.createElement("div");
-      row.style.display = "flex";
-      row.style.justifyContent = "space-between";
-      row.style.alignItems = "center";
-      row.style.gap = "8px";
-
-      // price
-      const price = document.createElement("div");
-      if (p.onSale) {
-        const now = document.createElement("span");
-        now.textContent = nok(p.discountedPrice);
-        now.style.color = "#b91c1c";
-        now.style.fontWeight = "600";
-        const was = document.createElement("s");
-        was.textContent = nok(p.price);
-        was.style.color = "#6b7280";
-        was.style.marginLeft = "6px";
-        price.append(now, " ", was);
-      } else {
-        price.textContent = nok(p.price);
-        price.style.fontWeight = "600";
-      }
-
-      // add button (doesn't navigate)
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = "Add";
-      btn.style.border = "1px solid #111827";
-      btn.style.background = "white";
-      btn.style.padding = "4px 8px";
-      btn.style.borderRadius = "8px";
-      btn.style.cursor = "pointer";
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        onAdd?.(p);
-      });
-
-      row.append(price, btn);
-      cap.append(title, row);
-      a.append(img, cap);
-      li.appendChild(a);
-      return li;
-    }
-
-    async function renderRecommendations() {
-      const mount = document.getElementById("cart-recos");
-      if (!mount) return;
-
-      const cartItems = Cart.readCart();
-      mount.innerHTML = "";
-      if (!cartItems.length) return; // nothing in cart -> skip
-
-      try {
-        const all = await getAllProducts();
-
-        // which ids are in the cart?
-        const inCartIds = new Set(cartItems.map((i) => i.id));
-
-        // find genres of items in cart (from the full list, since cart items didn't store genre)
-        const cartGenres = new Set(
-          all
-            .filter((p) => inCartIds.has(p.id))
-            .map((p) => (p.genre || "").toLowerCase())
-            .filter(Boolean)
-        );
-        if (!cartGenres.size) return;
-
-        // recommend: same-genre, not in cart; sort by rating desc; top 12
-        const recos = all
-          .filter(
-            (p) =>
-              !inCartIds.has(p.id) &&
-              cartGenres.has((p.genre || "").toLowerCase())
-          )
-          .sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
-          .slice(0, 12);
-
-        if (!recos.length) return;
-
-        const h3 = document.createElement("h3");
-        h3.className = "similar-heading";
-        h3.textContent = "You might also like";
-
-        const ul = document.createElement("ul");
-        ul.className = "similar-list";
-
-        const onAdd = (p) => {
-          Cart.addItem({
-            id: p.id,
-            title: p.title,
-            price: p.price,
-            discountedPrice: p.discountedPrice,
-            onSale: p.onSale,
-            image: p.image?.url || "",
-          });
-          Cart.updateCartHeader();
-          // re-render cart (and recos) so totals/quantities update
-          renderCart();
-          const statusEl = document.getElementById("status");
-          if (statusEl) statusEl.textContent = `${p.title} added to cart.`;
-        };
-
-        for (const p of recos) {
-          ul.appendChild(makeRecoCard(p, onAdd));
-        }
-
-        mount.append(h3, ul);
-      } catch (err) {
-        console.error("Failed to render recommendations:", err);
-      }
-    }
     // append all lines at once
     root.appendChild(frag);
 
@@ -336,7 +336,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       location.href = "confirmation/index.html";
     });
   }
-
   renderCart();
   renderRecommendations();
 });
