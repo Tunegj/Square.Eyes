@@ -5,90 +5,130 @@
   padding: 12px;
   margin: 16px auto;
   width: 100;
-
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-
+  grid-template-columns: repeat(3, max-content) max-content;
+  justify-content: center;
+  align-items: center;
+  gap: 12px 16px;
+  padding-block: 8px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-.toolbar > label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-weight: 600;
-}
-.toolbar select {
-  width: 100%;
-  height: 40px;
-  padding: 0 12px;
-  border-radius: var(--border-radius-medium);
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #111827;
+.toolbar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 500;
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.toolbar select,
+.toolbar button {
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  color: var(--color-text-dark);
 }
 
 .toolbar input[type="search"]::placeholder {
   color: #6b7280;
 }
 
-.clear-btn {
-  max-width: 100px;
-  max-height: 40px;
-  border-radius: var(--border-radius-medium);
+#clear-filter {
+  background: transparent;
+  border-color: #d1d5db;
   cursor: pointer;
-  align-self: end;
 }
-
-.clear-btn:hover {
-  background-color: var(--color-button-hover-red);
+#clear-filter:hover {
+  border-color: var(--color-button-hover-orange);
+  color: var(--color-button-hover-orange);
 }
 
 #products {
   list-style: none;
-  display: grid;
-  gap: 3rem;
-  grid-template-columns: repeat(3, 1fr);
+  margin: var(--space-6) 0;
   padding: 0;
-  margin: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 24px;
 }
 
-#products li {
-  border: 1px solid #fbefef;
-  border-radius: var(--border-radius-small);
+/* card */
+#products > li {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  background: #fff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-#products li:hover:where(:hover, :focus-within) {
+#products > li:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
-#products li h3 {
-  margin: 8px 0 4px 0;
-  font-size: var(--font-size-large);
+#products a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+#products img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+
+#products h3,
+#products p {
+  padding: 0 12px;
+}
+
+#products h3 {
+  margin: 8px 0 4px;
+  font-size: 1rem;
+}
+
+#products p {
+  margin: 0 0 12px;
+}
+
+.rating {
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rating-star {
+  color: #f5c518;
 }
 
 @media (max-width: 900px) {
   .toolbar {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr 1fr; /* two columns */
   }
-  .toolbar .clear-btn {
-    justify-self: stretch; /* button fills its column on smaller screens */
+  .toolbar > * {
+    width: 100%;
+  }
+  .toolbar label {
+    justify-content: space-between;
   }
 }
 
-/* small: one column stack */
-@media (max-width: 560px) {
+/* stack on phones */
+@media (max-width: 600px) {
   .toolbar {
     grid-template-columns: 1fr;
   }
-  .toolbar .clear-btn {
-    width: 100%;
-  }
+}
+
+/* (Optional) sticky toolbar under the banner — tweak 'top' to your layout */
+.toolbar--sticky {
+  position: sticky;
+  top: 200px; /* adjust so it's right under your logo/banner */
+  background: var(--color-background-light);
+  z-index: 10;
+  border-bottom: 1px solid #eee;
 }

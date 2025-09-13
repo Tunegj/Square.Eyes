@@ -17,3 +17,7 @@ label,
 textarea {
   font-family: var(--font-family-body);
 }
+
+.star {
+  color: #f59e0b;
+}

@@ -14,6 +14,43 @@ async function getProduct(id) {
   return data;
 }
 
+function makeSimilarCard(m) {
+  const li = document.createElement("li");
+  li.className = "similar-card";
+
+  const a = document.createElement("a");
+  a.href = `./index.html?id=${encodeURIComponent(m.id)}`;
+  a.className = "similar-link";
+
+  const img = document.createElement("img");
+  img.src = m.image?.url || "";
+  img.alt = m.image?.alt || m.title || "Movie image";
+  img.loading = "lazy";
+  img.decoding = "async";
+
+  const cap = document.createElement("div");
+  cap.className = "similar-caption";
+
+  const title = document.createElement("div");
+  title.className = "similar-title";
+  title.textContent = m.title || "Untitled";
+
+  const rating = document.createElement("div");
+  rating.className = "similar-rating";
+  const star = document.createElement("span");
+  star.className = "star";
+  star.setAttribute("aria-hidden", "true");
+  star.textContent = "★";
+  const rt = document.createElement("span");
+  rt.textContent = String(m.rating ?? "—");
+  rating.append(star, rt);
+
+  cap.append(title, rating);
+  a.append(img, cap);
+  li.appendChild(a);
+  return li;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const statusEl = document.getElementById("status");
   const root = document.getElementById("product-root");
@@ -29,50 +66,68 @@ document.addEventListener("DOMContentLoaded", async () => {
     statusEl.textContent = "";
     root.innerHTML = "";
 
+    const wrap = document.createElement("article");
+    wrap.className = "product container";
+
+    const media = document.createElement("div");
+    media.className = "product-media";
+
+    const info = document.createElement("div");
+    info.className = "product-info";
+
+    // --- image
     const img = document.createElement("img");
     img.src = p.image?.url || "";
     img.alt = p.image?.alt || p.title || "Product image";
-    img.style.width = "100%";
-    img.style.maxWidth = "480px";
-    img.style.aspectRatio = "3 / 4";
-    img.style.objectFit = "cover";
-    img.style.borderRadius = "12px";
+    img.loading = "lazy";
+    img.decoding = "async";
+    media.append(img);
 
+    // --- title
     const h2 = document.createElement("h2");
     h2.textContent = p.title || "Untitled";
 
+    // --- meta (genre • released • rating ★)
+    const meta = document.createElement("ul");
+    meta.className = "product-meta";
+    meta.innerHTML = `
+  <li>${p.genre ?? "—"}</li>
+  <li>Released: ${p.released ?? "—"}</li>
+  <li><span class="star" aria-hidden="true">★</span>
+      <span class="sr-only">IMDB rating: </span>${p.rating ?? "—"}</li>
+`;
+
+    // --- description
     const desc = document.createElement("p");
-    desc.textContent = p.description || "No description";
+    desc.className = "product-desc";
+    desc.textContent = p.description || "No description.";
 
-    const meta = document.createElement("p");
-    meta.textContent = `Genre: ${p.genre ?? ""} * Released: ${
-      p.released ?? ""
-    } * Rating: ${p.rating ?? ""}`;
-
-    const price = document.createElement("p");
+    // --- price
+    const price = document.createElement("div");
+    price.className = "product-price";
     if (p.onSale) {
       const now = document.createElement("span");
+      now.className = "now";
+      now.classList.add("on-sale");
       now.textContent = nok(p.discountedPrice);
-      now.style.color = "#b91c1c";
-      now.style.fontWeight = "600";
-      const was = document.createElement("s");
+
+      const was = document.createElement("span");
+      was.className = "was";
       was.textContent = nok(p.price);
-      was.style.color = "#6b7280";
-      was.style.marginLeft = "6px";
-      price.append(now, " ", was);
+
+      price.append(now, was);
     } else {
-      price.textContent = nok(p.price);
-      price.style.fontWeight = "600";
+      const now = document.createElement("span");
+      now.className = "now";
+      now.textContent = nok(p.price);
+      price.append(now);
     }
 
+    // --- add to cart
     const addBtn = document.createElement("button");
     addBtn.type = "button";
+    addBtn.className = "btn-primary";
     addBtn.textContent = "Add to cart";
-    addBtn.style.marginTop = "12px";
-    addBtn.style.padding = "8px 12px";
-    addBtn.style.border = "1px solid #111827";
-    addBtn.style.borderRadius = "8px";
-    addBtn.style.cursor = "pointer";
 
     addBtn.addEventListener("click", () => {
       Cart.addItem({
@@ -83,15 +138,61 @@ document.addEventListener("DOMContentLoaded", async () => {
         onSale: p.onSale,
         image: p.image?.url || "",
       });
-
       Cart.updateCartHeader();
       statusEl.textContent = "Added to basket.";
     });
 
-    root.append(addBtn);
-    Cart.updateCartHeader();
+    async function getAllProducts() {
+      const res = await fetch("https://v2.api.noroff.dev/square-eyes");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const { data } = await res.json();
+      return Array.isArray(data) ? data : [];
+    }
 
-    root.append(img, h2, desc, meta, price);
+    async function renderSimilar(currentGenre, currentId, mountNode) {
+      if (!currentGenre) return;
+
+      try {
+        const all = await getAllProducts();
+        const genreLc = String(currentGenre).toLowerCase();
+        const items = all
+          .filter(
+            (x) =>
+              (x.genre || "").toLowerCase() === genreLc && x.id !== currentId
+          )
+          .sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
+          .slice(0, 10);
+
+        if (!items.length) return;
+
+        const section = document.createElement("section");
+        section.className = "similar container";
+
+        const h3 = document.createElement("h3");
+        h3.className = "similar-heading";
+        h3.textContent = "You might also like";
+
+        const ul = document.createElement("ul");
+        ul.className = "similar-list";
+
+        for (const m of items) {
+          ul.appendChild(makeSimilarCard(m));
+        }
+
+        section.append(h3, ul);
+        mountNode.appendChild(section);
+      } catch (err) {
+        console.error("Failed to render similar movies:", err);
+      }
+    }
+    // --- assemble
+    info.append(h2, meta, desc, price, addBtn);
+    wrap.append(media, info);
+    root.append(wrap);
+    await renderSimilar(p.genre, p.id, root);
+
+    // keep header count fresh
+    Cart.updateCartHeader();
   } catch (e) {
     console.error(e);
     statusEl.textContent = `Failed to load product: ${e.message}`;

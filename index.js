@@ -216,9 +216,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       h3.textContent = p.title || "Untitled";
       h3.style.color = "#111827";
 
-      const ratingP = document.createElement("span");
-      ratingP.textContent = `IMDB rating: ${p.rating}` || "no rating";
-      ratingP.style.color = "#11827";
+      const ratingP = document.createElement("p");
+      ratingP.className = "rating";
+
+      const star = document.createElement("span");
+      star.textContent = "★"; // or "⭐"
+      star.className = "rating-star";
+      star.setAttribute("aria-hidden", "true");
+
+      const rating = Number(p.rating);
+      ratingP.append(
+        "IMDb rating: ",
+        star,
+        " ",
+        Number.isFinite(rating) ? rating.toFixed(1) : "N/A"
+      );
 
       const priceP = document.createElement("p");
       priceP.style.margin = "0";
@@ -235,7 +247,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         was.style.color = "#6b7280";
         was.style.marginLeft = "6px";
 
-        // Combine "now" and "was" into the price paragraph
         priceP.append(now, " ", was);
       } else {
         priceP.textContent = nok(p.price);

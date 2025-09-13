@@ -25,8 +25,8 @@
   </head>
   <body>
     <header class="site-header">
-      <div class="container inner-nav">
-        <a href="././../index.html" class="logo"
+      <div class="inner-nav">
+        <a href="../index.html" class="logo"
           >SQUARE EYES
           <span class="tagline">Own the Magic</span>
         </a>
@@ -46,9 +46,9 @@
 
         <nav id="primary-nav" class="nav-bar" aria-label="Primary">
           <ul class="nav-left">
-            <li><a href="../construction.html">Coming soon</a></li>
-            <li><a href="../construction.html">Popular Now</a></li>
-            <li><a href="../construction.html">New Releases</a></li>
+            <li><a href="construction.html">Coming soon</a></li>
+            <li><a href="construction.html">Popular Now</a></li>
+            <li><a href="construction.html">New Releases</a></li>
           </ul>
           <div class="nav-middle">
             <form class="nav-search" role="search">
@@ -59,7 +59,7 @@
             <a class="nav-link" href="#">Log in/Register</a>
             <a class="nav-link" href="#">My Account</a>
             <a
-              href="../checkout/index.html"
+              href="./checkout/index.html"
               class="cart-link"
               aria-label="View cart, 0 items"
             >
@@ -93,6 +93,11 @@
       <div id="status" aria-live="polite" role="status">Loading…</div>
       <ul id="cart-root"></ul>
       <div id="cart-total"></div>
+      <section
+        id="cart-recos"
+        class="similar container"
+        aria-label="You might also like"
+      ></section>
     </main>
     <script src="../cart.js"></script>
     <script src="../checkout/index.js" defer></script>
