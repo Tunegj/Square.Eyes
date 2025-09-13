@@ -1,0 +1,10 @@
+footer {
+  display: flex;
+  background-color: var(--color-background-dark);
+  height: 20vh;
+  width: 100%;
+}
+
+footer a {
+  color: var(--color-text-light);
+}

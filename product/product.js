@@ -87,15 +87,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     const h2 = document.createElement("h2");
     h2.textContent = p.title || "Untitled";
 
-    // --- meta (genre • released • rating ★)
-    const meta = document.createElement("ul");
-    meta.className = "product-meta";
-    meta.innerHTML = `
-  <li>${p.genre ?? "—"}</li>
-  <li>Released: ${p.released ?? "—"}</li>
-  <li><span class="star" aria-hidden="true">★</span>
-      <span class="sr-only">IMDB rating: </span>${p.rating ?? "—"}</li>
-`;
+    function buildMeta(p) {
+      const ul = document.createElement("ul");
+      ul.className = "product-meta";
+
+      const liGenre = document.createElement("li");
+      liGenre.textContent = p.genre ?? "—";
+
+      const liReleased = document.createElement("li");
+      liReleased.textContent = `Released: ${p.released ?? "—"}`;
+
+      const liRating = document.createElement("li");
+      const star = document.createElement("span");
+      star.className = "star";
+      star.setAttribute("aria-hidden", "true");
+      star.textContent = "★";
+
+      const sr = document.createElement("span");
+      sr.className = "sr-only";
+      sr.textContent = "IMDb rating: ";
+
+      const val = document.createElement("span");
+      const r = Number(p.rating);
+      val.textContent = Number.isFinite(r) ? r.toFixed(1) : "—";
+
+      liRating.append(sr, star, " ", val);
+
+      ul.append(liGenre, liReleased, liRating);
+      return ul;
+    }
+
+    const meta = buildMeta(p);
 
     // --- description
     const desc = document.createElement("p");
@@ -140,20 +162,33 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
       Cart.updateCartHeader();
       statusEl.textContent = "Added to basket.";
+      setTimeout(() => {
+        statusEl.textContent = "";
+      }, 1500);
     });
 
-    async function getAllProducts() {
+    async function getAllProductsCached() {
+      const KEY = "se_all_products_v1";
+      try {
+        const cached = JSON.parse(sessionStorage.getItem(KEY));
+        if (Array.isArray(cached)) return cached;
+      } catch {}
+
       const res = await fetch("https://v2.api.noroff.dev/square-eyes");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const { data } = await res.json();
-      return Array.isArray(data) ? data : [];
+      const arr = Array.isArray(data) ? data : [];
+      try {
+        sessionStorage.setItem(KEY, JSON.stringify(arr));
+      } catch {}
+      return arr;
     }
 
     async function renderSimilar(currentGenre, currentId, mountNode) {
       if (!currentGenre) return;
 
       try {
-        const all = await getAllProducts();
+        const all = await getAllProductsCached();
         const genreLc = String(currentGenre).toLowerCase();
         const items = all
           .filter(

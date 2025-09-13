@@ -20,6 +20,7 @@ function countCart() {
 }
 
 // Always store with `qty`
+
 function addItem(item) {
   const cart = readCart();
   const idx = cart.findIndex((i) => i.id === item.id);
@@ -52,7 +53,7 @@ function updateQty(id, delta) {
   const next = Math.max(1, base + Number(delta || 0));
 
   cart[idx].qty = next;
-  delete cart[idx].quantity; // normalize to `qty`
+  delete cart[idx].quantity;
 
   writeCart(cart);
   return countCart();
@@ -78,7 +79,7 @@ function updateCartHeader() {
 }
 
 function unitPrice(i) {
-  const n = Number(i.onSale ? i.discountedPrice : i.unitPrice);
+  const n = Number(i.onSale ? i.discountedPrice : i.price);
   return Number.isFinite(n) ? n : 0;
 }
 

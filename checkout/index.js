@@ -98,11 +98,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
       const all = await getAllProducts();
-
-      // items currently in cart
       const inCartIds = new Set(cartItems.map((i) => i.id));
-
-      // genres of items in the cart (from full list so genre is present)
       const cartGenres = new Set(
         all
           .filter((p) => inCartIds.has(p.id))
@@ -111,7 +107,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
       if (!cartGenres.size) return;
 
-      // same-genre, not in cart; top 12 by rating
       const recos = all
         .filter(
           (p) =>
@@ -140,7 +135,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           image: p.image?.url || "",
         });
         Cart.updateCartHeader();
-        renderCart(); // re-render to refresh totals and recos
+        renderCart();
         const statusEl = document.getElementById("status");
         if (statusEl) statusEl.textContent = `${p.title} added to cart.`;
       };

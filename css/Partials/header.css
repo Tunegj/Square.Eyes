@@ -59,7 +59,6 @@
   grid-template-columns: 1fr minmax(320px, 560px) 1fr;
   align-items: center;
   column-gap: 16px;
-  width: 100%;
 }
 
 .nav-bar a,
@@ -95,11 +94,15 @@
 
 .nav-search input {
   width: 100%;
+  box-sizing: border-box;
   height: 32px;
   border-radius: var(--border-radius-medium);
   border: 1px solid #d1d5db;
-  color: var(--color-text-dark);
   text-align: center;
+}
+
+.nav-search input::placeholder {
+  color: #6b7280;
 }
 
 .material-symbols-outlined {
