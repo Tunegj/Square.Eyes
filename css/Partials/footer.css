@@ -1,10 +1,13 @@
 footer {
   display: flex;
+  flex-direction: column;
   background-color: var(--color-background-dark);
   height: 20vh;
   width: 100%;
+  margin-top: 10px;
 }
 
 footer a {
   color: var(--color-text-light);
+  margin: 10px 12px;
 }
