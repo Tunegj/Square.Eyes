@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   receiptP.textContent = email
     ? `A receipt has been sent to ${email}.`
     : "A receipt has been sent to you email.";
+  receiptP.style.marginTop = "12px";
 
   root.append(thanksH2, receiptP);
 
@@ -40,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const h2 = document.createElement("h2");
   h2.textContent = `Order #${order.id}`;
+  h2.style.marginTop = "12px";
 
   const when = document.createElement("p");
   when.textContent = new Date(order.createdAt).toLocaleString();
@@ -51,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     li.style.justifyContent = "space-between";
     li.style.gap = "12px";
     li.style.padding = "6px 0";
+    li.style.marginTop = "12px";
 
     const left = document.createElement("div");
     left.textContent = `${line.title} - x${line.qty}`;

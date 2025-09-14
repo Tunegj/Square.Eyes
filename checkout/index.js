@@ -2,10 +2,106 @@ document.addEventListener("DOMContentLoaded", async () => {
   const statusEl = document.getElementById("status");
   const root = document.getElementById("cart-root");
   const totalsEl = document.getElementById("cart-total");
+
   const paymentSection = document.getElementById("payment-section");
   const checkoutForm = document.getElementById("checkout-form");
   const backBtn = document.getElementById("back-to-cart");
   const cardFields = document.getElementById("card-fields");
+
+  const REQUIRE_LUHN = false;
+  const cardNumberEl = checkoutForm?.elements["cardNumber"];
+  const expEl = checkoutForm?.elements["exp"];
+  const cvcEl = checkoutForm?.elements["cvc"];
+
+  const digits = (s) => (s || "").replace(/\D/g, "");
+
+  function luhnOk(numStr) {
+    const a = numStr.split("").reverse().map(Number);
+    let sum = 0;
+    for (let i = 0; i < a.length; i++) {
+      let d = a[i];
+      if (i % 2 === 1) {
+        d *= 2;
+        if (d > 9) d -= 9;
+      }
+      sum += d;
+    }
+    return sum % 10 === 0;
+  }
+
+  function formatCardNumber(s) {
+    const d = digits(s).slice(0, 19);
+    return d.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+  }
+
+  function isValidCardNumber(s) {
+    const d = digits(s);
+    if (d.length < 13 || d.length > 19) return false;
+    return REQUIRE_LUHN ? luhnOk(d) : true;
+  }
+
+  function formatExp(s) {
+    const d = digits(s).slice(0, 4);
+    if (d.length <= 2) return d;
+    return d.slice(0, 2) + "/" + d.slice(2);
+  }
+
+  function isValidExpiry(s) {
+    const m = /^(\d{2})\/(\d{2})$/.exec(s || "");
+    if (!m) return false;
+    const mm = Number(m[1]),
+      yy = Number(m[2]);
+    if (mm < 1 || mm > 12) return false;
+
+    const now = new Date();
+    const curYY = now.getFullYear() % 100;
+    const curMM = now.getMonth() + 1;
+    if (yy < curYY) return false;
+    if (yy === curYY && mm < curMM) return false;
+    return true;
+  }
+
+  function isValidCVC(s) {
+    return /^\d{3,4}$/.test(digits(s));
+  }
+
+  function setInvalid(el, invalid) {
+    if (!el) return;
+    el.setAttribute("aria-invalid", invalid ? "true" : "false");
+  }
+
+  if (cardNumberEl) {
+    cardNumberEl.addEventListener("input", () => {
+      cardNumberEl.value = formatCardNumber(cardNumberEl.value);
+      const okLen = digits(cardNumberEl.value).length >= 13;
+      setInvalid(cardNumberEl, !okLen);
+    });
+    cardNumberEl.addEventListener("blur", () => {
+      setInvalid(cardNumberEl, !isValidCardNumber(cardNumberEl.value));
+    });
+  }
+
+  if (expEl) {
+    expEl.addEventListener("input", () => {
+      expEl.value = formatExp(expEl.value);
+      const looksOk = /^(\d{0,2})(\/?\d{0,2})$/.test(expEl.value);
+      setInvalid(expEl, !looksOk);
+    });
+    expEl.addEventListener("blur", () => {
+      setInvalid(expEl, !isValidExpiry(expEl.value));
+    });
+  }
+
+  if (cvcEl) {
+    cvcEl.addEventListener("input", () => {
+      const d = digits(cvcEl.value).slice(0, 4);
+      cvcEl.value = d;
+      setInvalid(cvcEl, d.length < 3);
+    });
+    cvcEl.addEventListener("blur", () => {
+      setInvalid(cvcEl, !isValidCVC(cvcEl.value));
+    });
+  }
 
   let lastLines = [];
   let lastGrand = 0;
@@ -13,12 +109,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   function showPayment() {
     if (!paymentSection) return;
 
-    // reveal + re-enable interaction
     paymentSection.hidden = false;
-    paymentSection.inert = false; // supported in Chromium/FF
+    paymentSection.inert = false;
     paymentSection.setAttribute("aria-hidden", "false");
 
-    // focus the first field (or the section) and scroll into view
     (
       checkoutForm?.querySelector("input, select, textarea, button") ||
       paymentSection
@@ -28,8 +122,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function hidePayment() {
     if (!paymentSection) return;
-
-    // if focus is inside the section, move it out before hiding
     if (paymentSection.contains(document.activeElement)) {
       const focusTarget =
         totalsEl?.querySelector(
@@ -37,8 +129,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         ) ||
         document.getElementById("cart-total") ||
         document.body;
-
-      // ensure the target can be focused
       if (
         focusTarget &&
         !focusTarget.hasAttribute?.("tabindex") &&
@@ -49,22 +139,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       focusTarget?.focus({ preventScroll: true });
     }
 
-    // hide + disable interaction
-    paymentSection.inert = true; // prevents tab, clicks
+    paymentSection.inert = true;
     paymentSection.hidden = true;
     paymentSection.setAttribute("aria-hidden", "true");
   }
 
-  // Update cart count in header
   Cart.updateCartHeader();
 
-  // Format number as NOK currency
   const nok = (n) => {
     const x = Number(n);
     return Number.isFinite(x) ? `NOK ${x.toFixed(2)}` : "";
   };
 
-  // Get unit price of item
   const unitPrice = (i) => Number(i.onSale ? i.discountedPrice : i.price) || 0;
 
   let allProductsCache = null;
@@ -205,7 +291,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Render cart contents
   function renderCart() {
     const items = Cart.readCart();
     root.innerHTML = "";
@@ -216,22 +301,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       hidePayment();
       return;
     }
-    // clear status
+
     statusEl.textContent = "";
 
-    // render items
     const frag = document.createDocumentFragment();
     let grand = 0;
     const lines = [];
 
-    // for each item, render a line
     for (const i of items) {
       const qty = Number(i.qty ?? i.quantity ?? 1) || 1;
       const u = unitPrice(i);
       const line = u * qty;
       grand += line;
 
-      // keep track of lines for order summary
       lines.push({
         id: i.id,
         title: i.title || "Untitled",
@@ -261,6 +343,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       img.style.height = "80px";
       img.style.objectFit = "cover";
       img.style.borderRadius = "6px";
+      img.style.margin = "0 10px";
 
       const title = document.createElement("div");
       title.textContent = i.title || "Untitled";
@@ -283,14 +366,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       minus.style.padding = "4px 10px";
       minus.style.cursor = "pointer";
 
-      // disable minus button if qty is 1
       minus.disabled = qty === 1;
       if (minus.disabled) {
         minus.style.opacity = "0.5";
         minus.style.cursor = "not-allowed";
       }
 
-      //  quantity text
       const qtyText = document.createElement("span");
       qtyText.textContent = String(qty);
 
@@ -327,7 +408,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }, 1500);
       });
 
-      // assemble qty box
       qtyBox.append(minus, qtyText, plus);
 
       const right = document.createElement("div");
@@ -354,7 +434,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         statusEl.textContent = "Item removed from cart.";
       });
 
-      // assemble line item
       left.append(img, title);
       li.append(left, qtyBox, right, removeBtn);
       frag.appendChild(li);
@@ -363,20 +442,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     lastLines = lines;
     lastGrand = grand;
 
-    // append all lines at once
     root.appendChild(frag);
 
     const totalP = document.createElement("p");
     totalP.id = "grand-total";
     totalP.style.marginTop = "12px";
     totalP.style.fontWeight = "600";
+    totalP.style.margin = "0 10px";
     totalP.textContent = `Total: ${nok(grand)}`;
     totalsEl.appendChild(totalP);
 
     const checkoutBtn = document.createElement("button");
     checkoutBtn.type = "button";
     checkoutBtn.textContent = "Checkout";
-    checkoutBtn.style.marginTop = "12px";
+    checkoutBtn.style.margin = "12px 10px";
     checkoutBtn.style.padding = "10px 14px";
     checkoutBtn.style.borderRadius = "8px";
     checkoutBtn.style.border = "1px solid #111827";
@@ -384,35 +463,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     totalsEl.appendChild(checkoutBtn);
 
     checkoutBtn.addEventListener("click", () => {
-      showPayment(); // <— reveal the hidden form and scroll to it
+      showPayment();
     });
-
-    // on checkout, save order to sessionStorage and redirect to confirmation
-    // checkoutBtn.addEventListener("click", () => {
-    //   const order = {
-    //     id: (crypto?.randomUUID && crypto.randomUUID()) || String(Date.now()),
-    //     createdAt: new Date().toISOString(),
-    //     total: grand,
-    //     items: lines,
-    //   };
-    //   sessionStorage.setItem("se_last_order", JSON.stringify(order));
-
-    //   location.href = "confirmation/index.html";
-    // });
   }
 
   function updatePaymentFields() {
-    const method = checkoutForm?.querySelector(
-      'input[name="payMethod"]:checked'
-    )?.value;
-    if (cardFields) cardFields.hidden = method !== "card";
+    const method =
+      checkoutForm?.querySelector('input[name="payMethod"]:checked')?.value ||
+      "card";
+    const required = method === "card";
+    if (cardFields) cardFields.hidden = !required;
+    if (cardNumberEl) cardNumberEl.required = required;
+    if (expEl) expEl.required = required;
+    if (cvcEl) cvcEl.required = required;
   }
+
   checkoutForm?.addEventListener("change", (e) => {
     if (e.target && e.target.name === "payMethod") updatePaymentFields();
   });
+
   updatePaymentFields();
 
-  // Back to cart button
   backBtn?.addEventListener("click", () => {
     hidePayment();
     document
@@ -428,17 +499,47 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fd = new FormData(checkoutForm);
     const name = (fd.get("name") || "").toString().trim();
     const email = (fd.get("email") || "").toString().trim();
-    const cardNumber = (fd.get("cardNumber") || "").toString().trim();
-    const exp = (fd.get("exp") || "").toString().trim();
-    const cvc = (fd.get("cvc") || "").toString().trim();
+    const payMethod = (fd.get("payMethod") || "card").toString();
 
-    // minimal required fields
-    if (!name || !email || !cardNumber || !exp || !cvc) {
-      if (err) err.textContent = "Please fill out the required fields.";
+    if (!name || !email) {
+      if (err)
+        err.textContent =
+          "Please fill out the required fields (name and email).";
       return;
     }
 
-    const payMethod = (fd.get("payMethod") || "card").toString();
+    if (payMethod === "card") {
+      const rawNum = cardNumberEl?.value || "";
+      const rawExp = expEl?.value || "";
+      const rawCvc = cvcEl?.value || "";
+
+      if (digits(rawNum).length === 0) {
+        setInvalid(cardNumberEl, true);
+        if (err) err.textContent = "Card number is required.";
+        cardNumberEl?.focus();
+        return;
+      }
+      if (!isValidCardNumber(rawNum)) {
+        setInvalid(cardNumberEl, true);
+        if (err) err.textContent = "Please enter a valid card number.";
+        cardNumberEl?.focus();
+        return;
+      }
+      if (rawExp.trim() === "" || !isValidExpiry(rawExp)) {
+        setInvalid(expEl, true);
+        if (err)
+          err.textContent = "Expiry must be in MM/YY and not in the past.";
+        expEl?.focus();
+        return;
+      }
+      if (digits(rawCvc).length === 0 || !isValidCVC(rawCvc)) {
+        setInvalid(cvcEl, true);
+        if (err) err.textContent = "CVC must be 3 or 4 digits.";
+        cvcEl?.focus();
+        return;
+      }
+    }
+
     const last4 =
       (fd.get("cardNumber") || "").toString().replace(/\s+/g, "").slice(-4) ||
       null;
@@ -448,10 +549,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       createdAt: new Date().toISOString(),
       total: lastGrand,
       items: lastLines,
-      customer: {
-        name,
-        email,
-      },
+      customer: { name, email },
       payment: { method: payMethod, last4 },
     };
 
