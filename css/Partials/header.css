@@ -131,12 +131,20 @@
 }
 
 @media (max-width: 900px) {
+  /* .nav-left {
+    display: none;
+  } */
   .nav-bar {
-    grid-template-columns: 1fr;
+    display: grid;
+    grid-template-columns: 3fr 1fr;
     row-gap: 8px;
+    height: auto;
   }
   .nav-left,
-  .nav-right {
-    justify-content: center;
+  .nav-link {
+    display: none;
   }
-}
+  
+  .nav-search {
+    /* min-width: 400px; */
+  }
