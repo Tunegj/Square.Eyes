@@ -41,9 +41,9 @@
 
         <nav id="primary-nav" class="nav-bar" aria-label="Primary">
           <ul class="nav-left">
-            <li><a href="construction.html">Coming soon</a></li>
-            <li><a href="construction.html">Popular Now</a></li>
-            <li><a href="construction.html">New Releases</a></li>
+            <li><a href="../construction.html">Coming soon</a></li>
+            <li><a href="../construction.html">Popular Now</a></li>
+            <li><a href="../construction.html">New Releases</a></li>
           </ul>
           <div class="nav-middle">
             <form class="nav-search" role="search">
@@ -54,7 +54,7 @@
             <a class="nav-link" href="#">Log in/Register</a>
             <a class="nav-link" href="#">My Account</a>
             <a
-              href="./checkout/index.html"
+              href="./index.html"
               class="cart-link"
               aria-label="View cart, 0 items"
             >
@@ -81,13 +81,138 @@
 
           <button type="submit">Log in</button>
         </form>
-        <p>Don't have an account? <a href="#">Register here</a></p>
+        <p class="required">
+          Don't have an account? <a href="#">Register here</a>
+        </p>
       </div>
     </div>
     <main>
       <div id="status" aria-live="polite" role="status">Loading…</div>
       <ul id="cart-root"></ul>
       <div id="cart-total"></div>
+      <section
+        id="payment-section"
+        class="payment-section"
+        hidden
+        aria-hidden="true"
+        tabindex="-1"
+      >
+        <h2 class="payment-title">Checkout</h2>
+        <p>* fields are required</p>
+        <form id="checkout-form" novalidate>
+          <fieldset class="form-block">
+            <legend>Personal information</legend>
+            <div class="form-grid">
+              <label class="person-details"
+                >Full name <span class="req">*</span>
+                <input type="text" name="name" autocomplete="name" required
+              /></label>
+              <label class="person-details"
+                >Email <span class="req">*</span>
+                <input type="email" name="email" autocomplete="email" required
+              /></label>
+            </div>
+          </fieldset>
+          <fieldset class="form-block">
+            <legend>Billing address</legend>
+            <div class="form-grid">
+              <label class="person-details"
+                >Street address <span class="req">*</span>
+                <input
+                  type="text"
+                  name="address"
+                  autocomplete="address-line1"
+                  required
+              /></label>
+              <label for=""
+                >Postal code <span class="req">*</span>
+                <input
+                  type="text"
+                  name="zip"
+                  autocomplete="postal-code"
+                  required
+              /></label>
+              <label for=""
+                >City <span class="req">*</span>
+                <input
+                  type="text"
+                  name="city"
+                  autocomplete="address-level2"
+                  required
+              /></label>
+              <label class="person-details"
+                >Country <span class="req">*</span>
+                <input
+                  type="text"
+                  name="country"
+                  autocomplete="country-name"
+                  required
+              /></label>
+            </div>
+          </fieldset>
+          <fieldset class="form-block">
+            <legend>Payment</legend>
+            <div class="pay-methods">
+              <label for="">
+                <input type="radio" name="payMethod" value="card" checked />Card
+              </label>
+              <label for=""
+                ><input
+                  type="radio"
+                  name="payMethod"
+                  value="paypal"
+                />PayPal</label
+              >
+              <label for=""
+                ><input
+                  type="radio"
+                  name="payMethod"
+                  value="Vipps"
+                />Vipps</label
+              >
+            </div>
+            <div id="card-fields" class="form-grid">
+              <label class="person-details"
+                >Card Number <span class="req">*</span>
+                <input
+                  type="text"
+                  name="cardNumber"
+                  inputmode="numeric"
+                  autocomplete="cc-number"
+                  placeholder="1234 5678 9012 3456"
+                  required
+              /></label>
+              <label for="exp"
+                >Expiry (MM/YY) <span class="req">*</span>
+                <input
+                  type="text"
+                  name="exp"
+                  inputmode="numeric"
+                  autocomplete="cc-exp"
+                  placeholder="MM/YY"
+                  required
+              /></label>
+              <label for=""
+                >CVC <span class="req">*</span>
+                <input
+                  type="text"
+                  name="cvc"
+                  inputmode="numeric"
+                  autocomplete="cc-csc"
+                  placeholder="123"
+                  required
+              /></label>
+            </div>
+          </fieldset>
+          <div class="form-actions">
+            <button type="button" id="back-to-cart" class="btn-back">
+              Back to cart
+            </button>
+            <button type="submit" class="btn-submit">Place order</button>
+          </div>
+          <p id="form-error" class="form-error" aria-live="polite"></p>
+        </form>
+      </section>
       <section
         id="cart-recos"
         class="similar container"

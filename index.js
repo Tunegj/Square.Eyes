@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   clearBtn?.addEventListener("click", () => {
     genreSel.value = "";
     priceSel.value = "";
-    sortSel.value = "price-asc";
+    sortSel.value = "price-desc";
     if (searchEl) searchEl.value = "";
     applyFiltersAndSort();
   });

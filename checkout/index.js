@@ -2,6 +2,58 @@ document.addEventListener("DOMContentLoaded", async () => {
   const statusEl = document.getElementById("status");
   const root = document.getElementById("cart-root");
   const totalsEl = document.getElementById("cart-total");
+  const paymentSection = document.getElementById("payment-section");
+  const checkoutForm = document.getElementById("checkout-form");
+  const backBtn = document.getElementById("back-to-cart");
+  const cardFields = document.getElementById("card-fields");
+
+  let lastLines = [];
+  let lastGrand = 0;
+
+  function showPayment() {
+    if (!paymentSection) return;
+
+    // reveal + re-enable interaction
+    paymentSection.hidden = false;
+    paymentSection.inert = false; // supported in Chromium/FF
+    paymentSection.setAttribute("aria-hidden", "false");
+
+    // focus the first field (or the section) and scroll into view
+    (
+      checkoutForm?.querySelector("input, select, textarea, button") ||
+      paymentSection
+    )?.focus({ preventScroll: true });
+    paymentSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function hidePayment() {
+    if (!paymentSection) return;
+
+    // if focus is inside the section, move it out before hiding
+    if (paymentSection.contains(document.activeElement)) {
+      const focusTarget =
+        totalsEl?.querySelector(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        ) ||
+        document.getElementById("cart-total") ||
+        document.body;
+
+      // ensure the target can be focused
+      if (
+        focusTarget &&
+        !focusTarget.hasAttribute?.("tabindex") &&
+        focusTarget === document.getElementById("cart-total")
+      ) {
+        focusTarget.setAttribute("tabindex", "-1");
+      }
+      focusTarget?.focus({ preventScroll: true });
+    }
+
+    // hide + disable interaction
+    paymentSection.inert = true; // prevents tab, clicks
+    paymentSection.hidden = true;
+    paymentSection.setAttribute("aria-hidden", "true");
+  }
 
   // Update cart count in header
   Cart.updateCartHeader();
@@ -138,6 +190,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderCart();
         const statusEl = document.getElementById("status");
         if (statusEl) statusEl.textContent = `${p.title} added to cart.`;
+        setTimeout(() => {
+          statusEl.textContent = "";
+        }, 1500);
       };
 
       for (const p of recos) {
@@ -158,6 +213,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (!items.length) {
       statusEl.textContent = "Your cart is empty.";
+      hidePayment();
       return;
     }
     // clear status
@@ -256,6 +312,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         Cart.updateCartHeader();
         renderCart();
         statusEl.textContent = "Cart updated.";
+        setTimeout(() => {
+          statusEl.textContent = "";
+        }, 1500);
       });
 
       plus.addEventListener("click", () => {
@@ -263,6 +322,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         Cart.updateCartHeader();
         renderCart();
         statusEl.textContent = "Cart updated.";
+        setTimeout(() => {
+          statusEl.textContent = "";
+        }, 1500);
       });
 
       // assemble qty box
@@ -298,6 +360,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       frag.appendChild(li);
     }
 
+    lastLines = lines;
+    lastGrand = grand;
+
     // append all lines at once
     root.appendChild(frag);
 
@@ -318,19 +383,82 @@ document.addEventListener("DOMContentLoaded", async () => {
     checkoutBtn.style.cursor = "pointer";
     totalsEl.appendChild(checkoutBtn);
 
-    // on checkout, save order to sessionStorage and redirect to confirmation
     checkoutBtn.addEventListener("click", () => {
-      const order = {
-        id: (crypto?.randomUUID && crypto.randomUUID()) || String(Date.now()),
-        createdAt: new Date().toISOString(),
-        total: grand,
-        items: lines,
-      };
-      sessionStorage.setItem("se_last_order", JSON.stringify(order));
-
-      location.href = "confirmation/index.html";
+      showPayment(); // <— reveal the hidden form and scroll to it
     });
+
+    // on checkout, save order to sessionStorage and redirect to confirmation
+    // checkoutBtn.addEventListener("click", () => {
+    //   const order = {
+    //     id: (crypto?.randomUUID && crypto.randomUUID()) || String(Date.now()),
+    //     createdAt: new Date().toISOString(),
+    //     total: grand,
+    //     items: lines,
+    //   };
+    //   sessionStorage.setItem("se_last_order", JSON.stringify(order));
+
+    //   location.href = "confirmation/index.html";
+    // });
   }
+
+  function updatePaymentFields() {
+    const method = checkoutForm?.querySelector(
+      'input[name="payMethod"]:checked'
+    )?.value;
+    if (cardFields) cardFields.hidden = method !== "card";
+  }
+  checkoutForm?.addEventListener("change", (e) => {
+    if (e.target && e.target.name === "payMethod") updatePaymentFields();
+  });
+  updatePaymentFields();
+
+  // Back to cart button
+  backBtn?.addEventListener("click", () => {
+    hidePayment();
+    document
+      .getElementById("cart-total")
+      ?.scrollIntoView({ behavior: "smooth" });
+  });
+
+  checkoutForm?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const err = document.getElementById("form-error");
+    if (err) err.textContent = "";
+
+    const fd = new FormData(checkoutForm);
+    const name = (fd.get("name") || "").toString().trim();
+    const email = (fd.get("email") || "").toString().trim();
+    const cardNumber = (fd.get("cardNumber") || "").toString().trim();
+    const exp = (fd.get("exp") || "").toString().trim();
+    const cvc = (fd.get("cvc") || "").toString().trim();
+
+    // minimal required fields
+    if (!name || !email || !cardNumber || !exp || !cvc) {
+      if (err) err.textContent = "Please fill out the required fields.";
+      return;
+    }
+
+    const payMethod = (fd.get("payMethod") || "card").toString();
+    const last4 =
+      (fd.get("cardNumber") || "").toString().replace(/\s+/g, "").slice(-4) ||
+      null;
+
+    const order = {
+      id: (crypto?.randomUUID && crypto.randomUUID()) || String(Date.now()),
+      createdAt: new Date().toISOString(),
+      total: lastGrand,
+      items: lastLines,
+      customer: {
+        name,
+        email,
+      },
+      payment: { method: payMethod, last4 },
+    };
+
+    sessionStorage.setItem("se_last_order", JSON.stringify(order));
+    location.href = "confirmation/index.html";
+  });
+
   renderCart();
   renderRecommendations();
 });

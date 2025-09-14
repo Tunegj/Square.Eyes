@@ -21,3 +21,7 @@ textarea {
 .star {
   color: #f59e0b;
 }
+
+[hidden] {
+  display: none !important;
+}

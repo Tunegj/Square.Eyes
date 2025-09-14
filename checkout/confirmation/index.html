@@ -67,31 +67,13 @@
         </nav>
       </div>
     </header>
-    <!-- login window -->
-    <div class="login-modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h3>Log In</h3>
-        <form action="">
-          <label for="username">Username:</label> <br />
-          <input type="text" name="username" id="username" /> <br /><br />
-
-          <label for="password">Password:</label><br />
-          <input type="password" name="password" id="password" /> <br /><br />
-
-          <button type="submit">Log in</button>
-        </form>
-        <p>Don't have an account? <a href="#">Register here</a></p>
-      </div>
-    </div>
-    <main>
-      <h2>Thank you!</h2>
+    <main class="container stack-md">
       <div id="status" aria-live="polite" role="status">Loading…</div>
       <section id="order-root"></section>
       <p><a class="browse" href="../../index.html">Browse more movies</a></p>
     </main>
     <script src="../../cart.js" defer></script>
-    <script src="../../checkout/confirmation/index.js" defer></script>
+    <script src="./index.js" defer></script>
     <!-- Main -->
     <!-- Footer -->
   </body>
