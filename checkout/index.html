@@ -103,38 +103,51 @@
           <fieldset class="form-block">
             <legend>Personal information</legend>
             <div class="form-grid">
-              <label class="person-details"
+              <label for="name" class="person-details"
                 >Full name <span class="req">*</span>
-                <input type="text" name="name" autocomplete="name" required
+                <input
+                  id="name"
+                  type="text"
+                  name="name"
+                  autocomplete="name"
+                  required
               /></label>
-              <label class="person-details"
+              <label for="email" class="person-details"
                 >Email <span class="req">*</span>
-                <input type="email" name="email" autocomplete="email" required
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  autocomplete="email"
+                  required
               /></label>
             </div>
           </fieldset>
           <fieldset class="form-block">
             <legend>Billing address</legend>
             <div class="form-grid">
-              <label class="person-details"
+              <label for="street" class="person-details"
                 >Street address <span class="req">*</span>
                 <input
+                  id="street"
                   type="text"
                   name="address"
                   autocomplete="address-line1"
                   required
               /></label>
-              <label for=""
+              <label for="postCode"
                 >Postal code <span class="req">*</span>
                 <input
+                  id="postCode"
                   type="text"
                   name="zip"
                   autocomplete="postal-code"
                   required
               /></label>
-              <label for=""
+              <label for="city"
                 >City <span class="req">*</span>
                 <input
+                  id="city"
                   type="text"
                   name="city"
                   autocomplete="address-level2"
@@ -153,18 +166,26 @@
           <fieldset class="form-block">
             <legend>Payment</legend>
             <div class="pay-methods">
-              <label for="">
-                <input type="radio" name="payMethod" value="card" checked />Card
+              <label for="card">
+                <input
+                  id="card"
+                  type="radio"
+                  name="payMethod"
+                  value="card"
+                  checked
+                />Card
               </label>
-              <label for=""
+              <label for="payPal"
                 ><input
+                  id="payPal"
                   type="radio"
                   name="payMethod"
                   value="paypal"
                 />PayPal</label
               >
-              <label for=""
+              <label for="vipps"
                 ><input
+                  id="vipps"
                   type="radio"
                   name="payMethod"
                   value="Vipps"
@@ -172,9 +193,10 @@
               >
             </div>
             <div id="card-fields" class="form-grid">
-              <label class="person-details"
+              <label for="cardNumber" class="person-details"
                 >Card Number <span class="req">*</span>
                 <input
+                  id="cardNumber"
                   type="text"
                   name="cardNumber"
                   inputmode="numeric"
@@ -185,6 +207,7 @@
               <label for="exp"
                 >Expiry (MM/YY) <span class="req">*</span>
                 <input
+                  id="exp"
                   type="text"
                   name="exp"
                   inputmode="numeric"
@@ -192,9 +215,10 @@
                   placeholder="MM/YY"
                   required
               /></label>
-              <label for=""
+              <label for="cvc"
                 >CVC <span class="req">*</span>
                 <input
+                  id="cvc"
                   type="text"
                   name="cvc"
                   inputmode="numeric"

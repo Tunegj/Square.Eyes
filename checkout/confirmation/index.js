@@ -20,6 +20,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   statusEl.textContent = "";
 
+  const name = (order?.customer?.name || "fellow cinephile").toString().trim();
+  const email = (order?.customer?.email || "").toString().trim();
+
+  const thanksH2 = document.createElement("h2");
+  thanksH2.textContent = `Thank you, ${name}!`;
+
+  const receiptP = document.createElement("p");
+  receiptP.textContent = email
+    ? `A receipt has been sent to ${email}.`
+    : "A receipt has been sent to you email.";
+
+  root.append(thanksH2, receiptP);
+
   const nok = (n) => {
     const x = Number(n);
     return Number.isFinite(x) ? `NOK ${x.toFixed(2)}` : "";
