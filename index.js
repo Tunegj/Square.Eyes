@@ -1,3 +1,5 @@
+import { createFavouriteButton } from "./favourites.js";
+
 const API_URL = "https://v2.api.noroff.dev/square-eyes";
 
 async function fetchProducts() {
@@ -214,7 +216,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         priceP.textContent = nok(p.price);
       }
 
-      a.append(img, h3, priceP, ratingP);
+      const favBtn = createFavouriteButton(p.id);
+
+      a.append(img, h3, priceP, ratingP, favBtn);
       li.appendChild(a);
       frag.appendChild(li);
     }

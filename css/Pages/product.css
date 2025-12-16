@@ -71,6 +71,18 @@
   color: #b91c1c;
 }
 
+.product-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.product-actions .btn-primary {
+  margin-top: 0;
+  height: 44px;
+}
+
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -82,7 +94,7 @@
   background: #fff;
   color: #111827;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.05s ease;
+  transition: background-color 0.15s ease, transform 0.05s ease;
 }
 
 .btn-primary:hover {

@@ -1,3 +1,5 @@
+import { createFavouriteButton } from "../favourites.js";
+
 const BASE = "https://v2.api.noroff.dev/square-eyes";
 
 function nok(n) {
@@ -86,6 +88,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // --- title
     const h2 = document.createElement("h2");
     h2.textContent = p.title || "Untitled";
+
+    const favBtn = createFavouriteButton(p.id);
 
     function buildMeta(p) {
       const ul = document.createElement("ul");
@@ -221,7 +225,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
     // --- assemble
-    info.append(h2, meta, desc, price, addBtn);
+
+    const actions = document.createElement("div");
+    actions.className = "product-actions";
+    actions.append(addBtn, favBtn);
+
+    info.append(h2, meta, desc, price, actions);
     wrap.append(media, info);
     root.append(wrap);
     await renderSimilar(p.genre, p.id, root);

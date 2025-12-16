@@ -25,3 +25,37 @@ textarea {
 [hidden] {
   display: none !important;
 }
+
+.product-actions .fav-btn {
+  margin-left: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.fav-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 0.5rem;
+
+  font-size: 1.9rem;
+  line-height: 1;
+  cursor: pointer;
+
+  color: #bbb;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.fav-btn[aria-pressed="true"] {
+  color: #e63946;
+}
+
+.fav-btn:hover,
+.fav-btn:focus-visible {
+  transform: scale(1.1);
+  outline: none;
+}
