@@ -1,7 +1,5 @@
 # Square Eyes - JavaScript 1
 
-```md
-
 <img width="1807" height="916" alt="squareEyes" src="https://github.com/user-attachments/assets/17c77c5d-f46f-4a2f-84cf-cfc52d5acf4c" />
 
 A movie browsing website built as part of the JavaScript 1 course assignment at the Frontend Development studies at Noroff.
@@ -30,6 +28,7 @@ Clone the repo:
 
 ```bash
 git clone https://github.com/Tunegj/Square.Eyes.git
+```
 
 ## Contributing
 
